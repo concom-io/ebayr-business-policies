@@ -1,5 +1,5 @@
 # -*- encoding : utf-8 -*-
-module Ebayr #:nodoc:
+module EbayrBusinessPolicies #:nodoc:
   # A response to an Ebayr::Request.
   class Response < Record
     def initialize(request, response)

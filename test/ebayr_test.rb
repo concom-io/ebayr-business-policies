@@ -1,12 +1,12 @@
 # -*- encoding : utf-8 -*-
 require 'test_helper'
-require 'ebayr'
+require 'ebayr_business_policies'
 require 'fakeweb'
 
-describe Ebayr do
-  before { Ebayr.sandbox = true }
+describe EbayrBusinessPolicies do
+  before { EbayrBusinessPolicies.sandbox = true }
 
-  def check_common_methods(mod = Ebayr)
+  def check_common_methods(mod = EbayrBusinessPolicies)
     assert_respond_to mod, :"dev_id"
     assert_respond_to mod, :"dev_id="
     assert_respond_to mod, :"cert_id"
@@ -35,43 +35,43 @@ describe Ebayr do
 
   # If this passes without an exception, then we're ok.
   describe "basic usage" do
-    before { FakeWeb.register_uri(:post, Ebayr.uri, :body => xml) }
+    before { FakeWeb.register_uri(:post, EbayrBusinessPolicies.uri, :body => xml) }
     let(:xml) { "<GeteBayOfficialTimeResponse><Ack>Succes</Ack><Timestamp>blah</Timestamp></GeteBayOfficialTimeResponse>" }
 
     it "runs without exceptions" do
-      Ebayr.call(:GeteBayOfficialTime).timestamp.must_equal 'blah'
+      EbayrBusinessPolicies.call(:GeteBayOfficialTime).timestamp.must_equal 'blah'
     end
   end
 
   it "correctly reports its sandbox status" do
-    Ebayr.sandbox = false
-    Ebayr.wont_be :sandbox?
-    Ebayr.sandbox = true
-    Ebayr.must_be :sandbox?
+    EbayrBusinessPolicies.sandbox = false
+    EbayrBusinessPolicies.wont_be :sandbox?
+    EbayrBusinessPolicies.sandbox = true
+    EbayrBusinessPolicies.must_be :sandbox?
   end
 
   it "has the right sandbox URIs" do
-    Ebayr.must_be :sandbox?
-    Ebayr.uri_prefix.must_equal "https://api.sandbox.ebay.com/ws"
-    Ebayr.uri_prefix("blah").must_equal "https://blah.sandbox.ebay.com/ws"
-    Ebayr.uri.to_s.must_equal "https://api.sandbox.ebay.com/ws/api.dll"
+    EbayrBusinessPolicies.must_be :sandbox?
+    EbayrBusinessPolicies.uri_prefix.must_equal "https://api.sandbox.ebay.com/ws"
+    EbayrBusinessPolicies.uri_prefix("blah").must_equal "https://blah.sandbox.ebay.com/ws"
+    EbayrBusinessPolicies.uri.to_s.must_equal "https://api.sandbox.ebay.com/ws/api.dll"
   end
 
   it "has the right real-world URIs" do
-    Ebayr.sandbox = false
-    Ebayr.uri_prefix.must_equal "https://api.ebay.com/ws"
-    Ebayr.uri_prefix("blah").must_equal "https://blah.ebay.com/ws"
-    Ebayr.uri.to_s.must_equal "https://api.ebay.com/ws/api.dll"
-    Ebayr.sandbox = true
+    EbayrBusinessPolicies.sandbox = false
+    EbayrBusinessPolicies.uri_prefix.must_equal "https://api.ebay.com/ws"
+    EbayrBusinessPolicies.uri_prefix("blah").must_equal "https://blah.ebay.com/ws"
+    EbayrBusinessPolicies.uri.to_s.must_equal "https://api.ebay.com/ws/api.dll"
+    EbayrBusinessPolicies.sandbox = true
   end
 
   it "works when as an extension" do
-    mod = Module.new { extend Ebayr }
+    mod = Module.new { extend EbayrBusinessPolicies }
     check_common_methods(mod)
   end
 
   it "works as an inclusion" do
-    mod = Module.new { extend Ebayr }
+    mod = Module.new { extend EbayrBusinessPolicies }
     check_common_methods(mod)
   end
 
@@ -80,8 +80,8 @@ describe Ebayr do
   end
 
   it "has decent defaults" do
-    Ebayr.must_be :sandbox?
-    Ebayr.uri.to_s.must_equal "https://api.sandbox.ebay.com/ws/api.dll"
-    Ebayr.logger.must_be_kind_of Logger
+    EbayrBusinessPolicies.must_be :sandbox?
+    EbayrBusinessPolicies.uri.to_s.must_equal "https://api.sandbox.ebay.com/ws/api.dll"
+    EbayrBusinessPolicies.logger.must_be_kind_of Logger
   end
 end

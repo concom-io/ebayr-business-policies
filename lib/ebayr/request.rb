@@ -1,8 +1,8 @@
 # -*- encoding : utf-8 -*-
-module Ebayr #:nodoc:
+module EbayrBusinessPolicies #:nodoc:
   # Encapsulates a request which is sent to the eBay Trading API.
   class Request
-    include Ebayr
+    include EbayrBusinessPolicies
 
     attr_reader :command
 
@@ -19,7 +19,7 @@ module Ebayr #:nodoc:
       # Remaining options are converted and used as input to the call
       @input = options.delete(:input) || options
     end
-    
+
     def input_xml
       self.class.xml(@input)
     end
@@ -32,24 +32,29 @@ module Ebayr #:nodoc:
     # Gets the headers that will be sent with this request.
     def headers
       {
-        'X-EBAY-API-COMPATIBILITY-LEVEL' => @compatability_level.to_s,
-        'X-EBAY-API-DEV-NAME' => dev_id.to_s,
-        'X-EBAY-API-APP-NAME' => app_id.to_s,
-        'X-EBAY-API-CERT-NAME' => cert_id.to_s,
-        'X-EBAY-API-CALL-NAME' => @command.to_s,
-        'X-EBAY-API-SITEID' => @site_id.to_s,
-        'Content-Type' => 'text/xml'
+          # 'X-EBAY-API-COMPATIBILITY-LEVEL' => @compatability_level.to_s,
+          # 'X-EBAY-API-DEV-NAME' => dev_id.to_s,
+          # 'X-EBAY-API-APP-NAME' => app_id.to_s,
+          # 'X-EBAY-API-CERT-NAME' => cert_id.to_s,
+          # 'X-EBAY-API-CALL-NAME' => @command.to_s,
+          'X-EBAY-SOA-GLOBAL-ID' => @site_id.to_s,
+          'X-EBAY-SOA-CONTENT-TYPE' => 'XML',
+          'X-EBAY-SOA-SERVICE-NAME' => 'SellerProfilesManagementService',
+          'X-EBAY-SOA-OPERATION-NAME' => @command,
+          'X-EBAY-SOA-REQUEST-DATA-FORMAT' => 'XML',
+          'X-EBAY-SOA-RESPONSE-DATA-FORMAT' => 'XML',
+          'X-EBAY-SOA-SECURITY-TOKEN' => @auth_token,
+          'Content-Type' => 'text/xml'
       }
     end
 
     # Gets the body of this request (which is XML)
     def body
       <<-XML
-        <?xml version="1.0" encoding="utf-8"?>
-        <#{@command}Request xmlns="urn:ebay:apis:eBLBaseComponents">
-          #{requester_credentials_xml}
-          #{input_xml}
-        </#{@command}Request>
+<?xml version="1.0" encoding="utf-8"?>
+<#{@command}Request xmlns="http://www.ebay.com/marketplace/selling">
+#{input_xml}
+</#{@command}Request>
       XML
     end
 
@@ -71,7 +76,7 @@ module Ebayr #:nodoc:
       http.read_timeout = @http_timeout
 
       # Output request XML if debug flag is set
-      puts body if debug == true
+      puts body if debug
 
       if @uri.port == 443
         http.use_ssl = true
@@ -81,7 +86,7 @@ module Ebayr #:nodoc:
       post = Net::HTTP::Post.new(@uri.path, headers)
       post.body = body
 
-      response = http.start { |http| http.request(post) }
+      response = http.start { |x| x.request(post) }
 
       @response = Response.new(self, response)
     end
@@ -98,9 +103,12 @@ module Ebayr #:nodoc:
     def self.xml(*args)
       args.map do |structure|
         case structure
-          when Hash then structure.map { |k, v| "<#{k.to_s}>#{xml(v)}</#{k.to_s}>" }.join
-          when Array then structure.map { |v| xml(v) }.join
-          else self.serialize_input(structure).to_s
+          when Hash then
+            structure.map { |k, v| "<#{k.to_s}>#{xml(v)}</#{k.to_s}>" }.join
+          when Array then
+            structure.map { |v| xml(v) }.join
+          else
+            self.serialize_input(structure).to_s
         end
       end.join
     end
@@ -108,9 +116,11 @@ module Ebayr #:nodoc:
     # Prepares an argument for input to an eBay Trading API XML call.
     # * Times are converted to ISO 8601 format
     def self.serialize_input(input)
-       case input
-         when Time then input.to_time.utc.iso8601
-         else input
+      case input
+        when Time then
+          input.to_time.utc.iso8601
+        else
+          input
       end
     end
 

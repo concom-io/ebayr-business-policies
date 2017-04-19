@@ -5,11 +5,11 @@ require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/hash/conversions'
 
 # A library to assist in using the eBay Trading API.
-module Ebayr
-  autoload :Record,   File.expand_path('../ebayr/record', __FILE__)
-  autoload :Request,  File.expand_path('../ebayr/request',  __FILE__)
+module EbayrBusinessPolicies
+  autoload :Record, File.expand_path('../ebayr/record', __FILE__)
+  autoload :Request, File.expand_path('../ebayr/request', __FILE__)
   autoload :Response, File.expand_path('../ebayr/response', __FILE__)
-  autoload :User,     File.expand_path('../ebayr/user',     __FILE__)
+  autoload :User, File.expand_path('../ebayr/user', __FILE__)
 
   # To make a call, you need to have a registered user and app. Then you must
   # fill in the <code>dev_id</code>, <code>app_id</code>, <code>cert_id</code>
@@ -55,11 +55,11 @@ module Ebayr
   # Callbacks which are invoked at various points throughout a request.
   mattr_accessor :callbacks
   self.callbacks = {
-    :before_request   => [],
-    :after_request    => [],
-    :before_response  => [],
-    :after_response   => [],
-    :on_error         => []
+      :before_request => [],
+      :after_request => [],
+      :before_response => [],
+      :after_response => [],
+      :on_error => []
   }
 
   # The eBay Site to use for calls. The full list of available sites can be
@@ -84,13 +84,13 @@ module Ebayr
   #
   #     Ebayr.uri_prefix("blah")  # => https://blah.ebay.com/ws
   #     Ebayr.uri_prefix          # => https://api.ebay.com/ws
-  def uri_prefix(service = "api")
-    "https://#{service}#{sandbox ? ".sandbox" : ""}.ebay.com/ws"
+  def uri_prefix(service = "svcs")
+    "https://#{service}#{sandbox ? ".sandbox" : ""}.ebay.com/services/selling/v1"
   end
 
   # Gets the URI used for API calls (as a URI object)
   def uri(*args)
-    URI::parse("#{uri_prefix(*args)}/api.dll")
+    URI::parse("#{uri_prefix(*args)}/SellerProfilesManagementService")
   end
 
   # Gets the URI for eBay authorization/login. The session_id should be obtained

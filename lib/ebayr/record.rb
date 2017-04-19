@@ -1,5 +1,5 @@
 # -*- encoding : utf-8 -*-
-module Ebayr
+module EbayrBusinessPolicies
   class Record < Hash
     def initialize(initial = {})
       super()
