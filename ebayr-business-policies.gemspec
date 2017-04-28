@@ -20,14 +20,8 @@ command-line client which aids integration into other projects.
   gem.name = "ebayr-business-policies"
   gem.require_paths = ["lib"]
   gem.version = "0.0.10"
-  if RUBY_VERSION < "1.9"
-    gem.add_dependency 'i18n', '~> 0.6.11'
-    gem.add_dependency 'activesupport',
-    gem.add_development_dependency 'minitest'
-  else
-    gem.add_dependency 'nokogiri',
-    gem.add_dependency 'activesupport','~> 5.1.0'
-  end
+  gem.add_dependency 'nokogiri'
+  gem.add_dependency 'activesupport', '~> 5.1.0'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'fakeweb'
 end
