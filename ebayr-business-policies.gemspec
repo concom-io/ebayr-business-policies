@@ -26,7 +26,7 @@ command-line client which aids integration into other projects.
     gem.add_development_dependency 'minitest'
   else
     gem.add_dependency 'nokogiri',
-    gem.add_dependency 'activesupport',
+    gem.add_dependency 'activesupport','~> 5.1.0'
   end
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'fakeweb'
